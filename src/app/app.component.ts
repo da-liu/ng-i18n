@@ -7,7 +7,7 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  param = { value: 'world' };
+  param = { name: 'Team' };
   constructor(private translate: TranslateService) {
     translate.setDefaultLang('en');
     let browserLanguage = translate.getBrowserLang();

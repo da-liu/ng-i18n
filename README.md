@@ -1,27 +1,96 @@
-# I18nSb
+# Angular Internationalization Example
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+Minimal example of Angular internationalization with [ngx-translate](https://github.com/ngx-translate/core). 
 
-## Development server
+1. **Import TranslateModule**
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+   ```js
+   import { BrowserModule } from '@angular/platform-browser';
+   import { NgModule } from '@angular/core';
+   import { HttpClientModule, HttpClient } from '@angular/common/http';
+   import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+   import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+   
+   import { AppComponent } from './app.component';
+   
+   export function createTranslateLoader(http: HttpClient) {
+     return new TranslateHttpLoader(http, '../assets/i18n/', '.json');
+   }
+   
+   @NgModule({
+     declarations: [AppComponent],
+     imports: [
+       BrowserModule,
+       HttpClientModule,
+       TranslateModule.forRoot({
+         loader: {
+           provide: TranslateLoader,
+           useFactory: createTranslateLoader,
+           deps: [HttpClient]
+         }
+       })
+     ],
+     providers: [],
+     bootstrap: [AppComponent]
+   })
+   export class AppModule {}
+   ```
 
-## Code scaffolding
+   
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+2. **Import TranslationService**
 
-## Build
+   ```js
+   import { Component } from '@angular/core';
+   import { TranslateService } from '@ngx-translate/core';
+   
+   @Component({
+     selector: 'app-root',
+     templateUrl: './app.component.html',
+     styleUrls: ['./app.component.css']
+   })
+   export class AppComponent {
+     constructor(private translate: TranslateService) {
+       translate.setDefaultLang('en');
+       let browserLanguage = translate.getBrowserLang();
+       translate.use(browserLanguage.match(/en|fr/) ? browserLanguage : 'en');
+     }
+   
+     changeLanguage(lang) {
+       console.log(
+         `Changing language from ${this.translate.currentLang} to ${lang}`
+       );
+       this.translate.use(lang);
+     }
+   }
+   ```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+   
 
-## Running unit tests
+3. **Use translate pipe in template**
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+   ```html
+   <ul>
+     <button (click)="changeLanguage('en')">English</button>
+     <button (click)="changeLanguage('fr')">French</button>
+   </ul>
+   <div>{{ 'HOME.HELLO' | translate: param }}</div>
+   ```
 
-## Running end-to-end tests
+   
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+4. **Provide translation .json files**
 
-## Further help
+   ```json
+   // src/assets/en.json
+   {
+     "HOME": { "HELLO": "Hello {{ name }}!" }
+   }
+   
+   // src/assets/fr.json
+   {
+     "HOME": { "HELLO": "Salut {{ name }}!" }
+   }
+   ```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+   
